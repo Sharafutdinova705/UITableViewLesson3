@@ -18,9 +18,9 @@ class CustomTableViewCell: UITableViewCell {
     @IBOutlet weak var commentButton: UIButton!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var markedButton: UIButton!
-    var mainViewController: ViewController!
-    var selectedIndex:Int!
-    var currentSelectedArray: CurrentSelectedArray!
+    weak var mainViewController: ViewController?
+    var selectedIndex: Int?
+    var currentSelectedArray: CurrentSelectedArray?
     
     func addingPhoto(photo: Photo) {
         descriptionLabel.text = photo.description
@@ -32,10 +32,5 @@ class CustomTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-
 }
 

@@ -11,10 +11,10 @@ import UIKit
 
 class Photo {
     
-    var photo:UIImage
-    var description:String
+    var photo: UIImage
+    var description: String
     
-    init(photo:UIImage, description:String) {
+    init(photo: UIImage, description: String) {
         self.photo = photo
         self.description = description
     }

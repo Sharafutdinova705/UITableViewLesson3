@@ -16,15 +16,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var myImageView: UIImageView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var myCollectionView: UICollectionView!
-    @IBOutlet var myView: UIView!
+    @IBOutlet weak var myView: UIView!
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var mySegmentedControl: UISegmentedControl!
-    
-    @IBAction func indexChanged(_ sender: UISegmentedControl) {
-        if mySegmentedControl.selectedSegmentIndex == 0 || mySegmentedControl.selectedSegmentIndex == 2 {
-            myCollectionView.reloadData()
-        }
-    }
+    let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+    var controllerId = "PhotoDetailViewController"
+    var id = "tablePhoto"
+    var count:Int = 0
     
     var photoArray:[Photo] = []
     var markedArray:[Photo] = []
@@ -41,6 +39,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let photo6 = Photo(photo: #imageLiteral(resourceName: "a6"), description: "Also in Mamayev Kurgan.")
         let photo7 = Photo(photo: #imageLiteral(resourceName: "a9"), description: "Where we lived.")
         let photo8 = Photo(photo: #imageLiteral(resourceName: "a8"), description: "Seeeeaaaa.")
+        
         fillingPhotoArray.append(photo1)
         fillingPhotoArray.append(photo2)
         fillingPhotoArray.append(photo3)
@@ -60,88 +59,116 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
        
         markphotoArray.append(photo3)
         
-        
         return markphotoArray
     }
     
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
-        mainScrollView.contentSize.height = 1300
+        
         tableView.delegate = self
         tableView.dataSource = self
+        
         photoArray = creatProfile()
         markedArray = creatMarkedArray()
+        
         profileImageView.layer.cornerRadius = profileImageView.frame.size.width / 2
         profileImageView.clipsToBounds = true
         
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     override func viewWillAppear(_ animated: Bool) {
+        
         super.viewWillAppear(animated)
-        self.myCollectionView.reloadData()
-        self.tableView.reloadData()
+        
+        myCollectionView.reloadData()
+        tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return photoArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let photos = photoArray[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tablePhoto") as! CustomTableViewCell
-        cell.addingPhoto(photo: photos)
+        
+        let photo = photoArray[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: id) as! CustomTableViewCell
+        cell.addingPhoto(photo: photo)
         
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var count:Int = 5
-            if mySegmentedControl.selectedSegmentIndex == 0 {
-                print("yes")
-                count = photoArray.count
-            } else if mySegmentedControl.selectedSegmentIndex == 2 {
-                count = markedArray.count
-            }
+        
+        let currentIndex = mySegmentedControl.selectedSegmentIndex
+        
+        if currentIndex == 0 {
+            
+            count = photoArray.count
+            
+        } else if currentIndex == 2 {
+            
+            count = markedArray.count
+        }
+        
         return count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let currentIndex = mySegmentedControl.selectedSegmentIndex
         var photosCollection:Photo
         let cell1 = myCollectionView.dequeueReusableCell(withReuseIdentifier: "Collection", for: indexPath) as! CustomCollectionViewCell
-        if mySegmentedControl.selectedSegmentIndex == 0 {
+        
+        if currentIndex == 0 {
+            
             photosCollection = photoArray[indexPath.row]
             cell1.addPhoto(photo: photosCollection)
-        } else if mySegmentedControl.selectedSegmentIndex == 2 {
+            
+        } else if currentIndex == 2 {
+        
             photosCollection = markedArray[indexPath.row]
             cell1.addPhoto(photo: photosCollection)
+        
         }
+        
         return cell1
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let photoDetailVC = mainStoryboard.instantiateViewController(withIdentifier: "PhotoDetailViewController") as! PhotoDetailViewController
+        
+        let photoDetailVC = mainStoryboard.instantiateViewController(withIdentifier: controllerId) as! PhotoDetailViewController
         photoDetailVC.mainViewController = self
         photoDetailVC.selectedIndex = indexPath.row
+        
         if mySegmentedControl.selectedSegmentIndex == 0 {
+        
             photoDetailVC.currentSelectedArray = .photos
         } else if mySegmentedControl.selectedSegmentIndex == 2 {
+            
             photoDetailVC.currentSelectedArray = .markedPhotos
         }
+        
         self.show(photoDetailVC, sender: nil)
     }
     
-    
+    @IBAction func indexChanged(_ sender: UISegmentedControl) {
+        
+        let currentIndex = mySegmentedControl.selectedSegmentIndex
+        
+        if currentIndex == 0 || currentIndex == 2 {
+        
+            myCollectionView.reloadData()
+        }
+    }
     
     @IBAction func selectedSegment(_ sender: Any) {
+        
         let currentIndex = mySegmentedControl.selectedSegmentIndex
+        
         switch (currentIndex) {
         case 0:
             tableView.isHidden = true
